@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:novoprojetolocaliz/components/imageInput.dart';
+import 'package:novoprojetolocaliz/components/locationInput.dart';
 
 import 'package:novoprojetolocaliz/providers/createPlace.dart';
 import 'package:provider/provider.dart';
@@ -14,18 +16,33 @@ class Placeformpage extends StatefulWidget {
 class _PlaceformpageState extends State<Placeformpage> {
   final _titleController = TextEditingController();
   File? _pickedImage;
+  LatLng? _pickedPosition;
+
+  void _selectPosition(LatLng pos) {
+    setState(() {
+      _pickedPosition = pos;
+    });
+  }
 
   void _selectImage(File pickedImage) {
-    _pickedImage = pickedImage;
+    setState(() {
+      _pickedImage = pickedImage;
+    });
+  }
+
+  bool _isValid() {
+    return _titleController.text.isNotEmpty &&
+        _pickedImage != null &&
+        _pickedPosition != null;
   }
 
   _submitForm() {
-    if (_titleController.text.isEmpty || _pickedImage == null) {
+    if (!_isValid()) {
       return;
     }
 
     final provider = Provider.of<Createplace>(context, listen: false);
-    provider.addPlace(_titleController.text, _pickedImage!);
+    provider.addPlace(_titleController.text, _pickedImage!, _pickedPosition!);
 
     Navigator.of(context).pop();
   }
@@ -57,12 +74,14 @@ class _PlaceformpageState extends State<Placeformpage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Imageinput(this._selectImage),
                 ),
+                SizedBox(height: 30),
+                Locationinput(this._selectPosition),
               ],
             ),
           ),
           Spacer(),
           ElevatedButton.icon(
-            onPressed: _submitForm,
+            onPressed: _isValid() ? _submitForm : null,
             label: Text("Adicionar"),
             icon: Icon(Icons.add),
             style: ElevatedButton.styleFrom(

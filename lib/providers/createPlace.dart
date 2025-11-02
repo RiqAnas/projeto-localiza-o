@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:novoprojetolocaliz/Utils/db_util.dart';
+import 'package:novoprojetolocaliz/Utils/locationUtil.dart';
 import 'package:novoprojetolocaliz/models/place.dart';
 
 class Createplace with ChangeNotifier {
@@ -27,7 +29,11 @@ class Createplace with ChangeNotifier {
           (item) => Place(
             id: item["id"],
             title: item["title"],
-            location: null,
+            location: PlaceLocation(
+              lat: item["lat"],
+              long: item["long"],
+              address: item["address"],
+            ),
             image: File(item["imagepath"]),
           ),
         )
@@ -35,11 +41,16 @@ class Createplace with ChangeNotifier {
     notifyListeners();
   }
 
-  void addPlace(String placeT, File placeI) {
+  void addPlace(String placeT, File placeI, LatLng location) async {
+    String address = await Locationutil.getAdressFromLatLng(location);
     final newPlace = Place(
       id: Random().nextDouble().toString(),
       title: placeT,
-      location: null,
+      location: PlaceLocation(
+        lat: location.latitude,
+        long: location.longitude,
+        address: address,
+      ),
       image: placeI,
     );
     _items.add(newPlace);
@@ -48,6 +59,9 @@ class Createplace with ChangeNotifier {
       "id": newPlace.id,
       "title": newPlace.title,
       "imagepath": newPlace.image!.path,
+      "lat": location.latitude,
+      "long": location.longitude,
+      "address": address,
     });
     notifyListeners();
   }

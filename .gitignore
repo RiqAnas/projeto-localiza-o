@@ -32,6 +32,8 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+lib/utils/locationUtil.dart
+android/app/src/main/AndroidManifest.xml
 
 # Symbolication related
 app.*.symbols

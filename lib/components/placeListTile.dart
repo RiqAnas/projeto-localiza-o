@@ -21,7 +21,19 @@ class Placelisttile extends StatelessWidget {
               decoration: BoxDecoration(border: BoxBorder.all(width: 1)),
               child: Image.file(place.image!, fit: BoxFit.cover, scale: 0.5),
             ),
-            Text(place.title!),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(place.title!),
+                SizedBox(
+                  width: 275,
+                  child: Text(
+                    place.location!.address!,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
